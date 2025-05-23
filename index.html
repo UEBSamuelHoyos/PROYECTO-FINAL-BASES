@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ferretería CRUD Completo</title>
+    <link rel="stylesheet" href="style.css" />
+
+<h1>Ferretería CRUD Completo</h1>
+
+<nav>
+  <button onclick="showSection('categorias')">Categorías</button>
+  <button onclick="showSection('productos')">Productos</button>
+  <button onclick="showSection('clientes')">Clientes</button>
+  <button onclick="showSection('facturas')">Facturas</button>
+  <button onclick="showSection('detalles')">Detalles Factura</button>
+  <button onclick="showSection('tipos_clientes')">Tipos Cliente</button>
+  <button onclick="showSection('estados_facturas')">Estados Factura</button>
+</nav>
+
+<!-- Sección Categorías -->
+<section id="categorias" class="hidden">
+  <h2>Categorías</h2>
+  <div class="form-container">
+    <input type="hidden" id="catId" />
+    <input type="text" id="catNombre" placeholder="Nombre Categoría" />
+    <button onclick="saveCategoria()">Guardar Categoría</button>
+  </div>
+  <table id="catTable">
+    <thead><tr><th>ID</th><th>Nombre</th><th>Acciones</th></tr></thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<!-- Sección Productos -->
+<section id="productos" class="hidden">
+  <h2>Productos</h2>
+  <div class="form-container">
+    <input type="hidden" id="prodId" />
+    <input type="text" id="prodNombre" placeholder="Nombre" />
+    <input type="text" id="prodDescripcion" placeholder="Descripción" />
+    <input type="number" id="prodStock" placeholder="Stock" />
+    <input type="number" id="prodPrecio" placeholder="Precio" step="0.01" />
+    <select id="prodCategoria"></select>
+    <button onclick="saveProducto()">Guardar Producto</button>
+  </div>
+  <table id="prodTable">
+    <thead><tr><th>ID</th><th>Nombre</th><th>Descripción</th><th>Stock</th><th>Precio</th><th>Categoría</th><th>Acciones</th></tr></thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<!-- Sección Clientes -->
+<section id="clientes" class="hidden">
+  <h2>Clientes</h2>
+  <div class="form-container">
+    <input type="hidden" id="cliId" />
+    <input type="text" id="cliNombre" placeholder="Nombre Completo" />
+    <input type="text" id="cliTelefono" placeholder="Teléfono" />
+    <input type="email" id="cliEmail" placeholder="Email" />
+    <input type="text" id="cliDireccion" placeholder="Dirección" />
+    <input type="text" id="cliDocumento" placeholder="Documento" />
+    <select id="cliTipoCliente"></select>
+    <button onclick="saveCliente()">Guardar Cliente</button>
+  </div>
+  <table id="cliTable">
+    <thead>
+      <tr><th>ID</th><th>Nombre Completo</th><th>Teléfono</th><th>Email</th><th>Dirección</th><th>Documento</th><th>Tipo Cliente</th><th>Acciones</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<!-- Sección Facturas -->
+<section id="facturas" class="hidden">
+  <h2>Facturas</h2>
+  <div class="form-container">
+    <input type="hidden" id="facId" />
+    <select id="facCliente"></select>
+    <input type="date" id="facFecha" />
+    <input type="text" id="facMetodoPago" placeholder="Método de Pago" />
+    <select id="facEstado"></select>
+    <input type="number" id="facTotal" placeholder="Total Factura" step="0.01" />
+    <button onclick="saveFactura()">Guardar Factura</button>
+  </div>
+  <table id="facTable">
+    <thead>
+      <tr><th>ID</th><th>Cliente</th><th>Fecha</th><th>Método Pago</th><th>Estado</th><th>Total</th><th>Acciones</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<!-- Sección Detalles Factura -->
+<section id="detalles" class="hidden">
+  <h2>Detalles Factura</h2>
+  <div class="form-container">
+    <input type="hidden" id="detId" />
+    <select id="detFactura"></select>
+    <select id="detProducto"></select>
+    <input type="number" id="detCantidad" placeholder="Cantidad" />
+    <input type="number" id="detPrecioUnitario" placeholder="Precio Unitario" step="0.01" />
+    <button onclick="saveDetalle()">Guardar Detalle</button>
+  </div>
+  <table id="detTable">
+    <thead>
+      <tr><th>ID</th><th>Factura</th><th>Producto</th><th>Cantidad</th><th>Precio Unitario</th><th>Acciones</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<!-- Sección Tipos Cliente -->
+<section id="tipos_clientes" class="hidden">
+  <h2>Tipos Cliente</h2>
+  <div class="form-container">
+    <input type="hidden" id="tipCliId" />
+    <input type="text" id="tipCliDescripcion" placeholder="Descripción" />
+    <button onclick="saveTipoCliente()">Guardar Tipo Cliente</button>
+  </div>
+  <table id="tipCliTable">
+    <thead><tr><th>ID</th><th>Descripción</th><th>Acciones</th></tr></thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<!-- Sección Estados Factura -->
+<section id="estados_facturas" class="hidden">
+  <h2>Estados Factura</h2>
+  <div class="form-container">
+    <input type="hidden" id="estFacId" />
+    <input type="text" id="estFacDescripcion" placeholder="Descripción" />
+    <button onclick="saveEstadoFactura()">Guardar Estado Factura</button>
+  </div>
+  <table id="estFacTable">
+    <thead><tr><th>ID</th><th>Descripción</th><th>Acciones</th></tr></thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<script>
+  const API_BASE = 'http://127.0.0.1:5000/api'; // Cambia al URL de tu API si usas ngrok u otro
+
+  // Cargar todas las categorías y mostrar en la tabla
+  async function loadCategorias() {
+    try {
+      const res = await fetch(`${API_BASE}/categorias`);
+      const data = await res.json();
+      const tbody = document.querySelector('#catTable tbody');
+      tbody.innerHTML = '';
+      data.forEach(c => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${c.id_categoria}</td>
+          <td>${c.nombre_categoria}</td>
+          <td>
+            <button onclick="editCategoria(${c.id_categoria}, '${c.nombre_categoria}')">Editar</button>
+            <button onclick="deleteCategoria(${c.id_categoria})">Eliminar</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    } catch (error) {
+      alert('Error cargando categorías: ' + error.message);
+    }
+  }
+
+  // Cargar datos en el formulario para editar
+  function editCategoria(id, nombre) {
+    document.getElementById('catId').value = id;
+    document.getElementById('catNombre').value = nombre;
+  }
+
+  // Guardar o actualizar categoría
+  async function saveCategoria() {
+    const id = document.getElementById('catId').value;
+    const nombre = document.getElementById('catNombre').value.trim();
+
+    if (!nombre) {
+      alert('Por favor escribe un nombre para la categoría.');
+      return;
+    }
+
+    const url = id ? `${API_BASE}/categorias/${id}` : `${API_BASE}/categorias`;
+    const method = id ? 'PUT' : 'POST';
+
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre_categoria: nombre })
+      });
+
+      if (!res.ok) throw new Error('Error guardando categoría');
+
+      // Limpiar formulario y recargar tabla
+      document.getElementById('catId').value = '';
+      document.getElementById('catNombre').value = '';
+      loadCategorias();
+    } catch (error) {
+      alert(error.message);
+    }
+  }
+
+  // Eliminar categoría
+  async function deleteCategoria(id) {
+    if (!confirm('¿Seguro quieres eliminar esta categoría?')) return;
+
+    try {
+      const res = await fetch(`${API_BASE}/categorias/${id}`, { method: 'DELETE' });
+
+      if (!res.ok) throw new Error('Error eliminando categoría');
+
+      loadCategorias();
+    } catch (error) {
+      alert(error.message);
+    }
+  }
+
+  // Cargar categorías al abrir página
+  loadCategorias();
+</script>
+
+
+</body>
+</html>
